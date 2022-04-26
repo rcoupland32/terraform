@@ -1,0 +1,94 @@
+provider "vsphere" {
+  user           = var.vmware_username
+  password       = var.vmware_password
+  vsphere_server = "vcenter.dc01.lon.services.sabio.co.uk"
+#  version = "~&gt; 1.11"
+
+  # If you have a self-signed cert
+  allow_unverified_ssl = true
+}
+
+#Data Sources
+data "vsphere_datacenter" "dc" {
+  name = var.vm_datacenter["dc3"]
+}
+
+data "vsphere_datastore" "datastore" {
+  name          = var.vm_datastore["dc3vsan03"]
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+data "vsphere_compute_cluster" "cluster" {
+  name          = var.vm_cluster["dc3vsan3"]
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+data "vsphere_network" "network" {
+  name          = var.vm_network
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+data "vsphere_virtual_machine" "template" {
+  name          = var.vm_template["DC3"]
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+
+#Virtual Machine Resource
+resource "vsphere_virtual_machine" "domaincontroller" {
+  name   = "${var.vm_name}${count.index + 1}"
+  resource_pool_id = "${data.vsphere_compute_cluster.cluster.resource_pool_id}"
+  datastore_id     = "${data.vsphere_datastore.datastore.id}"
+  count            = "1"
+  
+
+  num_cpus = 2
+  memory   = 4096
+  guest_id = "${data.vsphere_virtual_machine.template.guest_id}"
+
+  scsi_type = "${data.vsphere_virtual_machine.template.scsi_type}"
+  #firmware = "efi"
+
+  network_interface {
+    network_id   = "${data.vsphere_network.network.id}"
+    adapter_type = "vmxnet3"
+  }
+
+  disk {
+    label            = "OS"
+    size             = 60
+    eagerly_scrub    = "${data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
+}
+
+
+  clone {
+    template_uuid = "${data.vsphere_virtual_machine.template.id}"
+
+    customize {
+      windows_options {
+        computer_name   = "${var.os_name}${count.index + 1}"
+        #workgroup       = "SABIO"
+        #join_domain           = var.domain
+        #domain_admin_user     = var.domain_admin_user
+        #domain_admin_password = var.domain_admin_password
+        #admin_password = "SabioPass20190522!"
+        run_once_command_list = [
+          "Install-WindowsFeature AD-Domain-Services -IncludeManagementTools",
+          "Import-Module ADDSDeployment",
+          "Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath 'C:\\Windows\\NTDS' -DomainMode 'WinThreshold' -DomainName 'test.services.sabio.co.uk' -DomainNetbiosName 'test' -ForestMode 'WinThreshold' -InstallDns:$true -LogPath 'C:\\Windows\\NTDS' -NoRebootOnCompletion:$false -SysvolPath 'C:\\Windows\\SYSVOL' -Force:$true -SafeModeAdministratorPassword (ConvertTo-SecureString -AsPlainText -String 'SabioPass20190522!' -Force)",
+        ]
+        
+      }
+
+      network_interface {
+        ipv4_address = "10.203.${var.cust_vlan}.${2 + count.index}"
+        ipv4_netmask = 24
+        dns_server_list = ["10.202.51.41", "10.202.51.42"]
+      }
+
+      ipv4_gateway = "10.203.${var.cust_vlan}.254"
+    
+  }
+}
+}

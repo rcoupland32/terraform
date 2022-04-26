@@ -69,9 +69,13 @@ resource "vsphere_virtual_machine" "adminvm" {
 
     customize {
       windows_options {
-        computer_name  = "Admin-Test01"
+        computer_name  = var.os_name
         workgroup      = "SABIO"
-        admin_password = "Pa$$w0rd"
+        #join_domain           = var.domain
+        #domain_admin_user     = var.domain_admin_user
+        #domain_admin_password = var.domain_admin_password
+        #admin_password        = var.local_adminpass
+        #admin_password = "SabioPass20190522!"
       }
 
       network_interface {

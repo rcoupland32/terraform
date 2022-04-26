@@ -15,3 +15,9 @@ variable "vm_name" {
   type	      = string
   default     = "0_Terraform_Admin01"
 }
+
+variable "os_name" {
+  description = "OS Hostname"
+  type        = string
+  default     = "test-admin01"
+}

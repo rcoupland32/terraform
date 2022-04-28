@@ -29,7 +29,7 @@ data "vsphere_network" "network" {
 }
 
 data "vsphere_virtual_machine" "template" {
-  name          = "Win2016GuiDC3"
+  name          = "Win2019GuiDC3"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
@@ -64,16 +64,21 @@ resource "vsphere_virtual_machine" "testvm" {
     customize {
       windows_options {
         computer_name  = "Ryan-Test"
-        workgroup      = "SABIO"
-        admin_password = "SabioPass20190522!"
+        #workgroup      = "SABIO"
+        #join_domain           = "test.lab"
+        #domain_admin_user     = "Administrator"
+        #domain_admin_password = "SabioPass20190522!"
+        #admin_password = "SabioPass20190522!"
       }
 
       network_interface {
-        ipv4_address = "172.23.10.22"
+        ipv4_address = "10.203.99.51"
         ipv4_netmask = 24
+      
       }
 
-      ipv4_gateway = "172.23.10.254"
+      ipv4_gateway = "10.203.99.254"
+      dns_server_list = ["10.203.99.50"]
     }
   }
 }

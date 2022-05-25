@@ -1,3 +1,4 @@
 *.tfstate
 *.terraform.lock.hcl
 *.tfstate.backup
+*.init.css

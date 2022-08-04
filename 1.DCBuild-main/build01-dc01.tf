@@ -49,7 +49,7 @@ resource "vsphere_virtual_machine" "A-domaincontroller" {
 provisioner "remote-exec"{
 
     connection {
-    host = "10.203.${var.cust_vlan}.2"
+    host = "10.202.${var.cust_vlan}.2"
     type = "winrm"
     timeout = "10m"
     insecure = "true"
@@ -60,6 +60,7 @@ provisioner "remote-exec"{
 
   inline = [
           
+	  "powershell Install-WindowsFeature -Name VolumeActivation -IncludeAllSubFeature -Include ManagementTools",
           "powershell Install-WindowsFeature AD-Domain-Services -IncludeManagementTools",
           "powershell Import-Module ADDSDeployment",
           "powershell Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath 'C:\\Windows\\NTDS' -DomainMode 'WinThreshold' -DomainName '${var.cust_shortname}.services.sabio.co.uk' -DomainNetbiosName '${var.cust_shortname}' -ForestMode 'WinThreshold' -InstallDns:$true -LogPath 'C:\\Windows\\NTDS' -NoRebootOnCompletion:$false -SysvolPath 'C:\\Windows\\SYSVOL' -Force:$true -SafeModeAdministratorPassword (ConvertTo-SecureString -AsPlainText -String '${var.cust_adminpassword}' -Force)"
@@ -72,7 +73,7 @@ provisioner "remote-exec"{
   guest_id = "${data.vsphere_virtual_machine.template-01.guest_id}"
 
   scsi_type = "${data.vsphere_virtual_machine.template-01.scsi_type}"
-  #firmware = "efi"
+  firmware = "efi"
 
   network_interface {
     network_id   = "${data.vsphere_network.network-01.id}"
@@ -95,6 +96,7 @@ provisioner "remote-exec"{
       windows_options {
         computer_name   = "dc01-${var.cust_shortname}"
         workgroup       = "SABIO"
+	#product_key	= "GF9NH-B62MX-4QWCQ-99DWR-X2HJV"
         #join_domain           = "test.lab"
         #domain_admin_user     = "administrator"
         #domain_admin_password = "SabioPass20190522!"
@@ -104,12 +106,12 @@ provisioner "remote-exec"{
       }
 
       network_interface {
-        ipv4_address = "10.203.${var.cust_vlan}.${2 + count.index}"
+        ipv4_address = "10.202.${var.cust_vlan}.${2 + count.index}"
         ipv4_netmask = 24
-        dns_server_list = ["10.203.${var.cust_vlan}.2", "10.203.${var.cust_vlan}.3"]
+        dns_server_list = ["10.202.${var.cust_vlan}.41", "10.202.${var.cust_vlan}.42"]
       }
 
-      ipv4_gateway = "10.203.${var.cust_vlan}.254"
+      ipv4_gateway = "10.202.${var.cust_vlan}.1"
     
   }
 }

@@ -73,7 +73,7 @@ resource "vsphere_virtual_machine" "A-domaincontroller" {
   guest_id = "${data.vsphere_virtual_machine.template-01.guest_id}"
 
   scsi_type = "${data.vsphere_virtual_machine.template-01.scsi_type}"
-  #firmware = "efi"
+  firmware = "efi"
 
   network_interface {
     network_id   = "${data.vsphere_network.network-01.id}"

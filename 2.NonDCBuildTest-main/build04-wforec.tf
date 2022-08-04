@@ -51,7 +51,7 @@ resource "vsphere_virtual_machine" "D-wforecorders" {
   guest_id = "${data.vsphere_virtual_machine.template-04.guest_id}"
 
   scsi_type = "${data.vsphere_virtual_machine.template-04.scsi_type}"
-  #firmware = "efi"
+  firmware = "efi"
 
   network_interface {
     network_id   = "${data.vsphere_network.network-04.id}"

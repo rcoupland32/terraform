@@ -7,55 +7,55 @@
 variable "cust_shortname"{
   description = "customer shortname" #lowercase only
   type        = string
-  default     = "tcom"
+  default     = "ARE YOU WORKING??"
 }
 
 variable "cust_vlan" {
   description = "Customer VLAN number for deployment"
   type        = string
-  default     = 28
+  default     = 51
 }
 
 variable "vm_datastore" {
   description = "Datastore name where VM will be deployed"
   type        = string
-  default     = "DC3vSANDatastore04Windows"
+  default     = "vSANDatastore08"
 }
 
 variable "vm_cluster" {
   description = "Cluster VM will be deployed to"
   type        = string
-  default     = "DC3-VSAN4-Windows-80712"
+  default     = "DC1-VSAN8-D17"
 }
 
 variable "vm_network"{
   description = "NIC network to assign to VMs"
   type        = string
-  default     = "pg1328TCOMApps_DC3"
+  default     = "pg51Management"
 }
 
 variable "vm_folder"{
   description = "Folder to Place VM inside (include parent directories if applicable)"
   type        = string
-  default     = "Projects/Transcom-28-IVR"
+  default     = "Management"
 }
 
 variable "vm_template" {
   description = "VM Template"
   type        = string
-  default     = "Win2019GuiDC3" #Win2019GuiDC1
+  default     = "Win2022GuiDC1" #Win2019GuiDC1
 }
 
 variable "vm_admintemplate" {
   description = "VM Template"
   type        = string
-  default     = "Win2019AdmDC3" #Win2019AdmDC1
+  default     = "Win2022AdmDC1" #Win2019AdmDC1
 }
 
 variable "vm_datacenter" {
   description = "Datacenter in vCenter"
   type        = string
-  default     = "dc03.lon.services.sabio.co.uk" #dc01.lon.services.sabio.co.uk
+  default     = "dc01.lon.services.sabio.co.uk" #dc01.lon.services.sabio.co.uk
   }
 
 variable "vm_isofile" {

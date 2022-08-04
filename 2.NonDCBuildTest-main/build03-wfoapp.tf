@@ -51,7 +51,7 @@ resource "vsphere_virtual_machine" "C-wfoapp" {
   guest_id = "${data.vsphere_virtual_machine.template-03.guest_id}"
 
   scsi_type = "${data.vsphere_virtual_machine.template-03.scsi_type}"
-  #firmware = "efi"
+  firmware = "efi"
 
   network_interface {
     network_id   = "${data.vsphere_network.network-03.id}"
